@@ -1,0 +1,30 @@
+spring:
+  profiles:
+    active: local
+
+  h2:
+    console:
+      enabled: true
+
+  jpa:
+    show-sql: true
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+
+  jwt:
+    header: Authorization
+    secret: APPLE1BANANA2CIRCLE3DIAMOND4ELITE5FLY6GRANT7HYBERNATE8
+    access-token-validity-in-seconds: 1800
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+crypto:
+  aes256:
+    key: QwdaVcs2a8dJad9F3ndwakyp91mmHt26
+    cipher: AES/CBC/PKCS5Padding
