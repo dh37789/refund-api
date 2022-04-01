@@ -2,7 +2,7 @@ package com.szs.szsrefund.global.config.common.service;
 
 import com.szs.szsrefund.global.config.common.Response;
 import com.szs.szsrefund.global.config.common.ResponseResult;
-import com.szs.szsrefund.global.error.ErrorCode;
+import com.szs.szsrefund.global.error.StatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
@@ -28,13 +28,14 @@ public class ResponseService {
 
     private Response setSuccessResponse(Response response) {
         response.setSuccess(true);
-        response.setCode("00");
-        response.setMsg("성공");
+        response.setCode(StatusCode.SUCCESS.getCode());
+        response.setMsg(StatusCode.SUCCESS.getMessage());
+        response.setStatus(StatusCode.SUCCESS.getStatus());
 
         return response;
     }
 
-    public Response getFailureResult(ErrorCode errorCode) {
+    public Response getFailureResult(StatusCode errorCode) {
         Response result = new Response();
         result.setSuccess(false);
         result.setCode(errorCode.getCode());
@@ -44,7 +45,7 @@ public class ResponseService {
         return result;
     }
 
-    public Response getInValidateResult(ErrorCode errorCode, MethodArgumentNotValidException e) {
+    public Response getInValidateResult(StatusCode errorCode, MethodArgumentNotValidException e) {
         Response result = new Response();
         result.setSuccess(false);
         result.setCode(errorCode.getCode());

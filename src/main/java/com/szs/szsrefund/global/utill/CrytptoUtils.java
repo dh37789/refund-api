@@ -10,7 +10,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 
 @Component
-public class CrytptoUtil {
+public class CrytptoUtils {
 
     private static String key;
     private static String chiper;

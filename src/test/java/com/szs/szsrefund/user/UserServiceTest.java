@@ -1,5 +1,6 @@
 package com.szs.szsrefund.user;
 
+import com.szs.szsrefund.domain.user.dto.UserInfoDto;
 import com.szs.szsrefund.domain.user.dto.UserLoginDto;
 import com.szs.szsrefund.domain.user.dto.UserSignDto;
 import com.szs.szsrefund.domain.user.entity.User;
@@ -7,7 +8,7 @@ import com.szs.szsrefund.domain.user.exception.*;
 import com.szs.szsrefund.domain.user.repository.UserRepository;
 import com.szs.szsrefund.domain.user.service.UserService;
 import com.szs.szsrefund.global.security.jwt.JwtTokenProvider;
-import com.szs.szsrefund.global.utill.CrytptoUtil;
+import com.szs.szsrefund.global.utill.CrytptoUtils;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -22,7 +23,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
-@SpringBootTest(classes = {CrytptoUtil.class})
+@SpringBootTest(classes = {CrytptoUtils.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserServiceTest {
 
@@ -125,7 +126,53 @@ class UserServiceTest {
         });
     }
 
+    @Test
+    @Order(7)
+    @DisplayName("회원가입하지_않은_유저_내정보_찾기_테스트")
+    void notFoundUserException_me_테스트 () throws Exception {
+        // given
+        given(userRepository.findByUserId(any())).willThrow(new NotFoundUserException());
+
+        String userId = "12344123azas";
+        // when
+        Assertions.assertThrows(NotFoundUserException.class, () -> {
+            userService.me(userId);
+        });
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("내정보_찾기_테스트")
+    void findMe_테스트 () throws Exception {
+        // given
+        final User user = buildUserResponse();
+        given(userRepository.findByUserId(any())).willReturn(Optional.of(user));
+
+        // when
+        String userId = "123";
+        UserInfoDto.Response result = userService.me(userId);
+
+        //then
+        assertThatEqualInfo(user, result);
+    }
+
+
+
+    private User buildUserResponse() throws Exception {
+        return User.builder()
+                .userId("123")
+                .password("1234")
+                .name("홍길동")
+                .regNo(CrytptoUtils.encrypt("860824-1655068"))
+                .build();
+    }
+
     private void assertThatEqual(UserSignDto.Request dto, UserSignDto.Response user) {
+        assertThat(user.getName()).isEqualTo(dto.getName());
+        assertThat(user.getUserId()).isEqualTo(dto.getUserId());
+    }
+
+    private void assertThatEqualInfo(User user, UserInfoDto.Response dto) {
         assertThat(user.getName()).isEqualTo(dto.getName());
         assertThat(user.getUserId()).isEqualTo(dto.getUserId());
     }

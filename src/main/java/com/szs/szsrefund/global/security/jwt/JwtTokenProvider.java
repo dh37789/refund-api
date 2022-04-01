@@ -1,8 +1,9 @@
 package com.szs.szsrefund.global.security.jwt;
 
+import com.szs.szsrefund.global.config.common.Constants;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -10,7 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Base64;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,20 +25,18 @@ public class JwtTokenProvider implements InitializingBean {
 
     private static long accessTokenValidityInMilliseconds; /* access토큰의 만료시간 */
 
-    public static final String NAME_KEY = "name"; /* token claim값의 키 */
-
     private static Key key; /* Key객체로 해시한 secreyKey  */
 
     public JwtTokenProvider(
             @Value("${spring.jwt.secret}") String secretKey,
             @Value("${spring.jwt.access-token-validity-in-seconds}") long accessTokenValidityInMilliseconds) {
-        this.secretKey = Base64.getUrlEncoder().encodeToString(secretKey.getBytes());;
+        this.secretKey = secretKey;
         this.accessTokenValidityInMilliseconds = accessTokenValidityInMilliseconds;
     }
 
     @Override
     public void afterPropertiesSet() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes = secretKey.getBytes();
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -45,14 +45,9 @@ public class JwtTokenProvider implements InitializingBean {
     }
 
     private static String createToken(String userId, String name) {
-        Long now = (new Date()).getTime();
-
         return Jwts.builder()
-                .setSubject(userId)
                 .setHeader(createHeader())
-                .setClaims(createClaim(name))
-                .setIssuedAt(new Date(now))
-                .setExpiration(new Date(now + accessTokenValidityInMilliseconds))
+                .setClaims(createClaim(userId, name))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -64,10 +59,19 @@ public class JwtTokenProvider implements InitializingBean {
         return headers;
     }
 
-    private static Map<String, Object> createClaim(String name) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(NAME_KEY, name);
+    private static Map<String, Object> createClaim(String userId, String name) {
+        Date now = new Date();
+
+        Claims claims = Jwts.claims()
+                .setSubject(userId)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + accessTokenValidityInMilliseconds));
+
+        claims.put(Constants.NAME_KEY, name);
+
         return claims;
     }
+
+
 
 }

@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response alreadyExistsUserException(MethodArgumentNotValidException exception) {
-        final ErrorCode errorCode = ErrorCode.NO_PARAMETER;
+        final StatusCode errorCode = StatusCode.NO_PARAMETER;
         return responseService.getInValidateResult(errorCode, exception);
     }
 }

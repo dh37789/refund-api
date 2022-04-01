@@ -1,6 +1,6 @@
 package com.szs.szsrefund.global.security;
 
-import com.szs.szsrefund.global.security.jwt.JwtTokenProvider;
+import com.szs.szsrefund.global.config.common.Constants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,29 +15,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final String[] IGNORING_PATH = {
-            "/swagger-resources",
-            "/swagger-resources/**",
-            "/swagger-ui.html",
-            "/swagger-ui/**"
-    };
-    private final String[] PERMIT_PATH = {
-            "/szs/signup",
-            "/szs/login"
-    };
-    private final String[] PERMIT_AUTH_PATH = {
-            "/szs/**"
-    };
-
     @Bean
     public PasswordEncoder getPassWordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring()
-                .antMatchers(IGNORING_PATH);
+    public void configure(WebSecurity web) {
+        web.ignoring().antMatchers(Constants.IGNORING_PATH);
     }
 
     @Override

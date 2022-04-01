@@ -1,16 +1,19 @@
 package com.szs.szsrefund.domain.user.api;
 
+import com.szs.szsrefund.domain.user.dto.UserInfoDto;
 import com.szs.szsrefund.domain.user.dto.UserLoginDto;
 import com.szs.szsrefund.domain.user.dto.UserSignDto;
 import com.szs.szsrefund.domain.user.service.UserService;
 import com.szs.szsrefund.global.config.common.ResponseResult;
 import com.szs.szsrefund.global.config.common.service.ResponseService;
+import com.szs.szsrefund.global.security.jwt.JwtUtils;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
@@ -40,5 +43,12 @@ public class UserController {
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseResult<UserLoginDto.Response> login(@RequestBody @Valid UserLoginDto.Request requestDto) {
         return responseService.getResponseResult(userService.login(requestDto));
+    }
+
+    @GetMapping("/me")
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseResult<UserInfoDto.Response> me(HttpServletRequest request) throws Exception {
+        String token = JwtUtils.resolveToken(request);
+        return responseService.getResponseResult(userService.me(JwtUtils.getSubject(token)));
     }
 }

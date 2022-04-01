@@ -1,5 +1,6 @@
-package com.szs.szsrefund.global.config.swagger;
+package com.szs.szsrefund.global.config;
 
+import com.szs.szsrefund.global.config.common.Constants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -23,7 +24,7 @@ public class SwaggerConfig {
                 .consumes(createConsumeContentTypes())
                 .produces(createProduceContentTypes())
                 .apiInfo(createSwaggerInfo()).select()
-                .apis(RequestHandlerSelectors.basePackage("com.szs.szsrefund.domain.user.api"))
+                .apis(RequestHandlerSelectors.basePackage(Constants.CONTROLLER_PATH))
                 .paths(PathSelectors.any())
                 .build()
                 .useDefaultResponseMessages(false);
@@ -39,14 +40,13 @@ public class SwaggerConfig {
 
     private Set<String> createConsumeContentTypes() {
         Set<String> consumes = new HashSet<>();
-        consumes.add("application/json;charset=UTF-8");
-        consumes.add("application/x-www-form-urlencoded");
+        consumes.add(Constants.CONTENT_TYPE);
         return consumes;
     }
 
     private Set<String> createProduceContentTypes() {
         Set<String> produces = new HashSet<>();
-        produces.add("application/json;charset=UTF-8");
+        produces.add(Constants.CONTENT_TYPE);
         return produces;
     }
 

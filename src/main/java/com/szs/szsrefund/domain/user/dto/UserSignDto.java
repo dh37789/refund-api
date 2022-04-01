@@ -1,7 +1,7 @@
 package com.szs.szsrefund.domain.user.dto;
 
 import com.szs.szsrefund.domain.user.entity.User;
-import com.szs.szsrefund.global.utill.CrytptoUtil;
+import com.szs.szsrefund.global.utill.CrytptoUtils;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,8 +43,8 @@ public class UserSignDto {
                     .build();
         }
 
-        public void encodeRegNo(String regNo) throws Exception {
-            this.regNo = CrytptoUtil.encrypt(regNo);
+        public void encryptRegNo(String regNo) throws Exception {
+            this.regNo = CrytptoUtils.encrypt(regNo);
         }
 
         public void encodePassword(String password) {
