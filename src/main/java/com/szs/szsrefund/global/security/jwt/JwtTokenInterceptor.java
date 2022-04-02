@@ -25,22 +25,19 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String token = JwtUtils.resolveToken(request);
 
-        if (token.isBlank())
+        if (token == null)
             throw new NullJwtTokenException();
         try {
             String userId = JwtUtils.getSubject(token);
             userRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new);
         } catch (MalformedJwtException e) {
-            e.printStackTrace();
             throw new InvalidJwtTokenException();
         } catch (ExpiredJwtException e) {
-            e.printStackTrace();
             throw new JwtTokenExpiredException();
         } catch (Exception e) {
-            e.printStackTrace();
             throw new JwtTokenException();
         }
 
