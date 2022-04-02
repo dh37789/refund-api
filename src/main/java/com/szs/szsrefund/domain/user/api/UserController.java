@@ -8,8 +8,7 @@ import com.szs.szsrefund.global.config.common.ResponseResult;
 import com.szs.szsrefund.global.config.common.service.ResponseService;
 import com.szs.szsrefund.global.security.jwt.JwtUtils;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ApiParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,23 +27,21 @@ public class UserController {
         this.responseService = responseService;
     }
 
-    @ApiOperation(value="", notes="")
-    @ApiResponses({
-            @ApiResponse(code = 201, message = ""),
-            @ApiResponse(code = 400, message = "")
-    })
+    @ApiOperation(value="사용자 회원가입", notes="환급정보를 조회 하기 위해 회원가입 합니다.")
     @PostMapping("/signup")
     @ResponseStatus(value = HttpStatus.CREATED)
-    public ResponseResult<UserSignDto.Response> signUp(@RequestBody @Valid UserSignDto.Request requestDto) throws Exception {
+    public ResponseResult<UserSignDto.Response> signUp(@RequestBody @Valid @ApiParam(value = "사용자 회원가입 request") UserSignDto.Request requestDto) throws Exception {
         return responseService.getResponseResult(userService.signUp(requestDto));
     }
 
+    @ApiOperation(value="사용자 로그인", notes="로그인하고 JWT 토큰을 반환합니다.")
     @PostMapping("/login")
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseResult<UserLoginDto.Response> login(@RequestBody @Valid UserLoginDto.Request requestDto) {
+    public ResponseResult<UserLoginDto.Response> login(@RequestBody @Valid @ApiParam(value = "사용자 로그인 request") UserLoginDto.Request requestDto) {
         return responseService.getResponseResult(userService.login(requestDto));
     }
 
+    @ApiOperation(value="사용자 정보보기", notes="header의 토큰정보를 읽어 내정보를 반환합니다.")
     @GetMapping("/me")
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseResult<UserInfoDto.Response> me(HttpServletRequest request) throws Exception {
