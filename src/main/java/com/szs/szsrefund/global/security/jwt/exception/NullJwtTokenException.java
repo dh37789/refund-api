@@ -1,4 +1,5 @@
 package com.szs.szsrefund.global.security.jwt.exception;
 
-public class NullJwtTokenException extends RuntimeException{
+public class NullJwtTokenException extends Exception{
+
 }

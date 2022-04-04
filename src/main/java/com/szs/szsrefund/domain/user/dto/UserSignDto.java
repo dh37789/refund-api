@@ -4,9 +4,11 @@ import com.szs.szsrefund.domain.user.entity.User;
 import com.szs.szsrefund.global.utill.CrytptoUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 
@@ -14,15 +16,17 @@ public class UserSignDto {
 
     @Getter
     @ApiModel(value = "사용자 회원가입 request")
-    @NoArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Request {
 
         @ApiModelProperty(name = "userId", example = "abc1234")
         @NotBlank(message = "userId 값이 없습니다.")
+        @Length(min = 5, max = 15)
         private String userId;
 
         @ApiModelProperty(name = "password", example = "1234")
         @NotBlank(message = "password 값이 없습니다.")
+        @Length(min = 3, max = 20)
         private String password;
 
         @ApiModelProperty(name = "name", example = "홍길동")
@@ -60,8 +64,8 @@ public class UserSignDto {
     }
 
     @Getter
-    @NoArgsConstructor
     @ApiModel(value = "사용자 회원가입 response")
+    @NoArgsConstructor
     public static class Response {
 
         @ApiModelProperty(name = "userId")

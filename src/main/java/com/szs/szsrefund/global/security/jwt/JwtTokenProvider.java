@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,16 +32,31 @@ public class JwtTokenProvider implements InitializingBean {
         this.accessTokenValidityInMilliseconds = accessTokenValidityInMilliseconds;
     }
 
+    /**
+     * secret키를 byte 형식으로 변환하여 해싱
+     */
     @Override
     public void afterPropertiesSet() {
         byte[] keyBytes = secretKey.getBytes();
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    /**
+     * 토큰 발급
+     * @param userId
+     * @param name
+     * @return
+     */
     public static String issueToken(String userId, String name) {
         return createToken(userId, name);
     }
 
+    /**
+     * jwt토큰 생성
+     * @param userId
+     * @param name
+     * @return
+     */
     private static String createToken(String userId, String name) {
         return Jwts.builder()
                 .setHeader(createHeader())
@@ -52,6 +65,10 @@ public class JwtTokenProvider implements InitializingBean {
                 .compact();
     }
 
+    /**
+     * jwtoken의 header생성
+     * @return
+     */
     private static Map<String, Object> createHeader() {
         Map<String, Object> headers = new HashMap<>();
         headers.put("typ", "JWT");
@@ -59,6 +76,12 @@ public class JwtTokenProvider implements InitializingBean {
         return headers;
     }
 
+    /**
+     * jwtToken의 claim생성
+     * @param userId
+     * @param name
+     * @return
+     */
     private static Map<String, Object> createClaim(String userId, String name) {
         Date now = new Date();
 

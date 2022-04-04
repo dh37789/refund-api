@@ -5,6 +5,7 @@ import com.szs.szsrefund.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ActiveProfiles("local")
 public class UserRepositoryTest {
 
     @Mock
@@ -22,7 +24,7 @@ public class UserRepositoryTest {
 
     @Test
     @Order(1)
-    @DisplayName("findByRegNo_테스트")
+    @DisplayName("findByRegNo 테스트")
     void findByRegNo_테스트() {
         // given
         User user = User.builder()
@@ -44,7 +46,7 @@ public class UserRepositoryTest {
 
     @Test
     @Order(2)
-    @DisplayName("findByUserId_테스트")
+    @DisplayName("findByUserId 테스트")
     void findByUserId_테스트() {
         // given
         User user = User.builder()

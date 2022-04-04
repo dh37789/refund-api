@@ -44,7 +44,7 @@ public class UserController {
     @ApiOperation(value="사용자 정보보기", notes="header의 토큰정보를 읽어 내정보를 반환합니다.")
     @GetMapping("/me")
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseResult<UserInfoDto.Response> me(HttpServletRequest request) throws Exception {
+    public ResponseResult<UserInfoDto.Response> me(HttpServletRequest request) throws Exception  {
         String token = JwtUtils.resolveToken(request);
         return responseService.getResponseResult(userService.me(JwtUtils.getSubject(token)));
     }

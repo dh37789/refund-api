@@ -1,6 +1,7 @@
 package com.szs.szsrefund.domain.user.entity;
 
 import com.sun.istack.NotNull;
+import com.szs.szsrefund.global.config.common.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import java.util.regex.Pattern;
 @Getter
 @Table(name = "tb_user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -30,7 +30,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .httpBasic().disable() // 기본설정 미사용
                 .csrf().disable() // csrf 보안 미사용
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // jwt로 인증하므로 세션 미사용
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // jwt로 인증하므로 세션 미사용
+                .and()
+                .headers().frameOptions().disable(); //h2-console 사용하기 위한 설정;
     }
 
 

@@ -4,9 +4,6 @@ import com.szs.szsrefund.global.config.common.Response;
 import com.szs.szsrefund.global.config.common.ResponseResult;
 import com.szs.szsrefund.global.error.StatusCode;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-
-import java.util.stream.Collectors;
 
 @Service
 public class ResponseService {
@@ -15,6 +12,20 @@ public class ResponseService {
         ResponseResult<T> response = new ResponseResult<>();
         setSuccessResponse(response);
         response.setData(data);
+
+        return response;
+    }
+
+    public ResponseResult getResponseResult(){
+        ResponseResult response = new ResponseResult();
+        setSuccessResponse(response);
+
+        return response;
+    }
+
+    public ResponseResult getResponseResult(StatusCode statusCode){
+        ResponseResult response = new ResponseResult();
+        setSuccessResponse(response, statusCode);
 
         return response;
     }
@@ -35,6 +46,15 @@ public class ResponseService {
         return response;
     }
 
+    private Response setSuccessResponse(Response response, StatusCode statusCode) {
+        response.setSuccess(true);
+        response.setCode(statusCode.getCode());
+        response.setMsg(statusCode.getMessage());
+        response.setStatus(statusCode.getStatus());
+
+        return response;
+    }
+
     public Response getFailureResult(StatusCode errorCode) {
         Response result = new Response();
         result.setSuccess(false);
@@ -45,14 +65,9 @@ public class ResponseService {
         return result;
     }
 
-    public Response getInValidateResult(StatusCode errorCode, MethodArgumentNotValidException e) {
-        Response result = new Response();
-        result.setSuccess(false);
-        result.setCode(errorCode.getCode());
-        result.setMsg(e.getBindingResult().getFieldErrors().stream().map(x -> x.getDefaultMessage()).collect(Collectors.joining()));
-        result.setStatus(errorCode.getStatus());
 
-        return result;
+    public Response getFailureResult(Response result) {
+        return  result;
     }
 }
 

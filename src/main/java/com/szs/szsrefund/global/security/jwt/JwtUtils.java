@@ -23,6 +23,11 @@ public class JwtUtils {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
+    /**
+     * header의 authorization부분의 토큰을 가져온다.
+     * @param request
+     * @return
+     */
     public static String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(Constants.AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer "))
@@ -30,6 +35,11 @@ public class JwtUtils {
         return null;
     }
 
+    /**
+     * subject에 있는 userId를 조회해 온다.
+     * @param token
+     * @return
+     */
     public static String getSubject(String token) {
         Claims claims = getClaims(token);
 
@@ -39,6 +49,11 @@ public class JwtUtils {
         return claims.getSubject();
     }
 
+    /**
+     * jwtToken에 있는 Claim을 추출한다.
+     * @param token
+     * @return
+     */
     private static Claims getClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)

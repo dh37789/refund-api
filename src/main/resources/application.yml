@@ -24,6 +24,17 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 
+  cache:
+    type: redis
+
+  redis:
+    host: localhost
+    port: 6379
+
+3o3:
+  base-url: https://codetest.3o3.co.kr
+  uri-path: /scrap/
+
 crypto:
   aes256:
     key: QwdaVcs2a8dJad9F3ndwakyp91mmHt26

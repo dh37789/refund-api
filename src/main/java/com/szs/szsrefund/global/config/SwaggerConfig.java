@@ -37,6 +37,7 @@ public class SwaggerConfig {
                 .paths(PathSelectors.any())
                 .build()
                 .useDefaultResponseMessages(false);
+
     }
 
     private SecurityContext securityContext() {
