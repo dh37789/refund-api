@@ -15,11 +15,11 @@ public enum StatusCode {
     NOT_MATCHED_REG_NO("E103", "옳지 않은 주민등록번호입니다.", 400),
     NOT_FOUND_USER("E104", "존재 하지 않는 회원입니다.", 404),
     NOT_MATCHED_PASSWORD("E105", "맞지 않는 비밀번호 입니다.", 400),
-    NO_PARAMETER("E106", "맞지 않는 비밀번호 입니다.", 400),
+    NO_PARAMETER("E106", "옳지 않은 파라미터입니다.", 400),
 
     JWT_TOKEN_EXCEPTION("E201", "인증토큰 에러입니다.", 401),
     JWT_TOKEN_EXPIRED("E202", "만료된 토큰입니다.", 401),
-    JWT_TOKEN_NULL("E203", "인증 토큰이 없습니다.", 401),
+    JWT_TOKEN_NULL("E203", "인증 토큰이 없습니다.", 404),
     INVALID_JWT_TOKEN("E204", "토큰이 옳바른 형식이 아닙니다.", 401),
 
     NOT_FOUND_INCOME("E301","급여내역 정보를 찾을 수 없습니다.",404),
