@@ -16,14 +16,11 @@ import com.szs.szsrefund.global.security.jwt.JwtUtils;
 import com.szs.szsrefund.global.utill.CrytptoUtils;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -40,28 +37,28 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
+@SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ActiveProfiles("local")
+@ActiveProfiles("dev")
 public class UserControllerTest {
 
-    @InjectMocks
+    @MockBean
     private UserController userController;
 
-    @Mock
+    @MockBean
     private UserService userService;
 
-    @Mock
+    @MockBean
     private UserRepository userRepository;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private MockMvc mockMvc;
 
-    @Mock
+    @MockBean
     private ResponseService responseService;
 
-    @Mock
+    @MockBean
     private JwtTokenInterceptor jwtTokenInterceptor;
 
     @MockBean
@@ -233,21 +230,6 @@ public class UserControllerTest {
 
     @Test
     @Order(9)
-    @DisplayName("내정보 조회 실패 테스트 회원정보 없음")
-    public void me_fail_empty_user_테스트() throws Exception {
-        // given
-        final String USER_NAME = "abcd123";
-        given(userService.me(USER_NAME)).willThrow(new NotFoundUserException());
-
-        // when
-        ResultActions resultActions = requestMe(TEST_TOKEN);
-
-        // then
-        resultActions.andExpect(status().isNotFound());
-    }
-
-    @Test
-    @Order(10)
     @DisplayName("내정보 조회 성공 테스트")
     public void me_fail_empty_token_테스트2() throws Exception {
         // given

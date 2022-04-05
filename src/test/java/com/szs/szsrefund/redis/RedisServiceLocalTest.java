@@ -4,18 +4,16 @@ import com.szs.szsrefund.global.config.redis.RedisService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-
-@ExtendWith(SpringExtension.class)
+@SpringBootTest
 @ActiveProfiles("local")
 public class RedisServiceLocalTest {
 
@@ -39,7 +37,7 @@ public class RedisServiceLocalTest {
 
     @Test
     @Order(2)
-    @DisplayName("redis multiSet 테스트")
+    @DisplayName("redis 5초 timeout 테스트")
     void redis_multiSet_Test() {
         // given
         Map<String, String> redisMap = new HashMap<>();

@@ -117,7 +117,7 @@ public class RefundService {
      * @param TOTAL_PAYMENT
      * @return
      */
-    private BigDecimal calculateLimit(BigDecimal TOTAL_PAYMENT) {
+    public BigDecimal calculateLimit(BigDecimal TOTAL_PAYMENT) {
         BigDecimal result;
         if (TOTAL_PAYMENT.compareTo(Constants.TOTAL_PAYMENT_MIN) < 0) {
             result = new BigDecimal(740000);
@@ -136,7 +136,7 @@ public class RefundService {
      * @param TAX
      * @return
      */
-    private BigDecimal calculateDeduction(BigDecimal TAX) {
+    public BigDecimal calculateDeduction(BigDecimal TAX) {
         BigDecimal result;
         if (TAX.compareTo(Constants.TAX_STANDARD) <= 0) {
             result = TAX.multiply(Constants.TAX_MIN_LATE);

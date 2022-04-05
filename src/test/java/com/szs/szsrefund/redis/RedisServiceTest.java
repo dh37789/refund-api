@@ -16,7 +16,6 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("dev")
 public class RedisServiceTest {
@@ -62,7 +61,7 @@ public class RedisServiceTest {
 
     @Test
     @Order(3)
-    @DisplayName("redis multiSet 테스트")
+    @DisplayName("redis 5초 타임아웃 테스트")
     void redis_timeout_Test() throws InterruptedException {
         // given
         String userId = "홍길동";

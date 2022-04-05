@@ -12,6 +12,7 @@ import com.szs.szsrefund.domain.scrap.service.ScrapService;
 import com.szs.szsrefund.domain.user.entity.User;
 import com.szs.szsrefund.domain.user.repository.UserRepository;
 import com.szs.szsrefund.domain.user.service.UserService;
+import com.szs.szsrefund.global.config.common.Constants;
 import com.szs.szsrefund.global.config.common.service.ResponseService;
 import com.szs.szsrefund.global.config.redis.RedisService;
 import com.szs.szsrefund.global.error.user.UserExceptionHandler;
@@ -85,16 +86,116 @@ public class RefundServiceTest {
     @Test
     @Order(1)
     @DisplayName("유저 환급액조회 성공 테스트")
-    void scrap_success_테스트() throws Exception {
+    void refund_success_테스트() throws Exception {
         // given
         final ScrapUser scrapUser = createScrapUser();
         final User user = buildUserResponse();
         given(userRepository.findByUserId(any())).willReturn(Optional.of(user));
         given(scrapRepository.findByRegNo(any())).willReturn(Optional.of(scrapUser));
 
+        // when
         RefundDto.Response response = refundService.refund(TEST_TOKEN);
 
+        // then
         assertThat(response.getName()).isEqualTo(user.getName());
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("유저 환급액조회 3300만원 이하 테스트")
+    void refund_3300_under_테스트() {
+        // given
+        final BigDecimal MONEY = new BigDecimal(32900000);
+
+        // when
+        BigDecimal calcMoney = refundService.calculateLimit(MONEY);
+
+        // then
+        assertThat(calcMoney).isEqualTo(Constants.LIMIT_MAX);
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("유저 환급액조회 3300만원 초과 7000만원 이하 환급액 66만원 테스트")
+    void refund_3300_over_7000_under_cass_66_테스트() {
+        // given 740000 - ((50000000 - 33000000) × 0.008) = 604000 -> 66만원 이하
+        final BigDecimal MONEY = new BigDecimal(50000000);
+
+        // when
+        BigDecimal calcMoney = refundService.calculateLimit(MONEY);
+
+        // then
+        assertThat(calcMoney).isEqualTo(Constants.LIMIT_MID);
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("유저 환급액조회 3300만원 초과 7000만원 이하 환급액 66만원 이상 테스트")
+    void refund_3300_over_7000_under_cass_66_up_테스트() {
+        // given 740000 - ((35000000 - 33000000) × 0.008) = 724000 -> 66만원 이상
+        final BigDecimal MONEY = new BigDecimal(35000000);
+
+        // when
+        BigDecimal calcMoney = refundService.calculateLimit(MONEY);
+
+        // then
+        assertThat(calcMoney).isEqualTo(Constants.LIMIT_MAX.subtract((MONEY.subtract(Constants.TOTAL_PAYMENT_MIN)).multiply(Constants.LIMIT_MID_RATE)));
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("유저 환급액조회 7000만원 초과 환급액 50만원 이상 테스트")
+    void refund_7000_over_cass_50_down_테스트() {
+        // given 660000 - ((90000000 - 70000000) × 0.5) = -9340000 -> 50만원 이하
+        final BigDecimal MONEY = new BigDecimal(90000000);
+
+        // when
+        BigDecimal calcMoney = refundService.calculateLimit(MONEY);
+
+        // then
+        assertThat(calcMoney).isEqualTo(Constants.LIMIT_MIN);
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("유저 환급액조회 7000만원 초과 환급액 50만원 이상 테스트")
+    void refund_7000_over_cass_50_up_테스트() {
+        // given 660000 - ((70000100 - 70000000) × 0.5) = 659950 -> 50만원 이상
+        final BigDecimal MONEY = new BigDecimal(70000100);
+
+        // when
+        BigDecimal calcMoney = refundService.calculateLimit(MONEY);
+
+        // then
+        assertThat(calcMoney).isEqualTo(Constants.LIMIT_MID.subtract((MONEY.subtract(Constants.TOTAL_PAYMENT_MAX)).multiply(Constants.LIMIT_MAX_RATE)));
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("유저 산출세액 130만원 이하")
+    void tax_130_under_테스트() {
+        // given 1250000 × 0.55 = 687500
+        final BigDecimal TAX = new BigDecimal(1250000);
+
+        // when
+        BigDecimal calcTax = refundService.calculateDeduction(TAX);
+
+        // then
+        assertThat(calcTax).isEqualTo(TAX.multiply(Constants.TAX_MIN_LATE));
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("유저 산출세액 130만원 초과")
+    void tax_130_over_테스트() {
+        // given 715000 + ((1500000-1300000) * 0.3) = 775000 +- 1
+        final BigDecimal TAX = new BigDecimal(1500000);
+
+        // when
+        BigDecimal calcTax = refundService.calculateDeduction(TAX);
+
+        // then
+        assertThat(calcTax).isEqualTo(Constants.TAX_MAX.add(TAX.subtract(Constants.TAX_STANDARD).multiply(Constants.TAX_MAX_LATE)));
     }
 
     private User buildUserResponse() throws Exception {
