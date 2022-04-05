@@ -57,7 +57,7 @@ public class UserService {
 
         /* AES/CBC/PKCS5Padding 방식으로 암호화 */
         requestDto.encryptRegNo(requestDto.getRegNo());
-        /* 비밀번호 SHA로 해시 암호화 */
+        /* 비밀번호 bcrypt로 해시 암호화 */
         requestDto.encodePassword(passwordEncoder.encode(requestDto.getPassword()));
 
         User user = userRepository.save(requestDto.toEntity());
