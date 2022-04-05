@@ -240,7 +240,7 @@ docker exec -it redis_boot redis-cli
 
 - Header에서 token 정보를 받아와 회원 정보를 조회해옵니다.
 - redis를 이용하여 한번 이상 내 정보를 조회한 회원은 redis를 통해 정보를 불러오게 됩니다.
-- redis와 db의 접합성 관련 이슈는 해당 정보들이 쉽게 바뀌지 않고, USER PATCH 요청시 해당 데이터를 맞춰주면 된다고 생각하여서 redis를 통해 응답을 받도록 하였습니다.
+- redis와 db의 정합성 관련 이슈는 해당 정보들이 쉽게 바뀌지 않고, USER PATCH 요청시 해당 데이터를 맞춰주면 된다고 생각하여서 redis를 통해 응답을 받도록 하였습니다.
 
 ### 테스트 결과
 
@@ -323,8 +323,10 @@ docker exec -it redis_boot redis-cli
 ### 기능구현
 
 - Header에 저장된 token값을 가져와 회원의 scrap정보를 불러옵니다.
-- scrap데이터가 없지만 token값이 존재할 경우 scrap처리중이라는 안내 응답을 보내도록 예외처리 했습니다.
+- scrap데이터가 없지만 redis에 token값이 존재할 경우 scrap처리중이라는 안내 응답을 보내도록 예외처리 했습니다.
 - scrap데이터가 존재하여 데이터를 가져왔을 경우 해당 값으로 환급액을 계산하여 반환합니다.
+- 한번 이상 조회 할 경우 redis에 저장 후 일정 시간동안 해당값을 반환하도록 설정하여 재요청에 대한 트래픽을 최소화 하였습니다.
+
 
 ### 테스트 결과
 
@@ -338,9 +340,9 @@ docker exec -it redis_boot redis-cli
 
 ## 개선 방안
 
-1. Redis를 이용해 무분별한 DB 요청 횟수를 줄였습니다.
+1. 인메모리 저장공간인 Redis를 이용해 줄여 응답성능을 높였습니다.
 2. WebFlux의 non blocking 방식을 통해 사용자의 무분별한 응답 대기현상을 최소화 하였습니다.
-3. Redis에 set한 데이터에 timeout을 걸어 scrap API의 중복호출을 방지했습니다.
+4. 요청온 토큰값을 Redis에 set하고 데이터에 timeout을 걸어 scrap API의 무분별한 중복호출을 방지하여 트래픽을 최소화 하였습니다.
 
 # 주관식 문제
 
