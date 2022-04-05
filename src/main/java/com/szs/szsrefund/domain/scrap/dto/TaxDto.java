@@ -2,6 +2,7 @@ package com.szs.szsrefund.domain.scrap.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.szs.szsrefund.domain.scrap.entity.ScrapTax;
+import com.szs.szsrefund.domain.scrap.exception.NotFoundTaxException;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,6 +24,14 @@ public class TaxDto {
     public TaxDto(String incomeDivision, BigDecimal totalUseAmount) {
         this.incomeDivision = incomeDivision;
         this.totalUseAmount = totalUseAmount;
+    }
+
+    public static TaxDto findTaxData(ScrapJsonListDto jsonList) {
+        return jsonList
+                .getScrap002()
+                .stream()
+                .findFirst()
+                .orElseThrow(NotFoundTaxException::new);
     }
 
     public ScrapTax toEntity() {

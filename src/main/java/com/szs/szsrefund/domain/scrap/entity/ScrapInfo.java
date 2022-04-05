@@ -1,5 +1,6 @@
 package com.szs.szsrefund.domain.scrap.entity;
 
+import com.szs.szsrefund.domain.scrap.dto.ScrapDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,5 +38,14 @@ public class ScrapInfo {
         this.hostNm = hostNm;
         this.workerResDt = workerResDt;
         this.workerReqDt = workerReqDt;
+    }
+
+    public static ScrapInfo findInfoData(ScrapDto.Response response) {
+        return ScrapInfo.builder()
+                .appVer(response.getAppVer())
+                .hostNm(response.getHostNm())
+                .workerReqDt(response.getWorkerReqDt())
+                .workerResDt(response.getWorkerResDt())
+                .build();
     }
 }

@@ -4,7 +4,6 @@ import com.szs.szsrefund.domain.scrap.service.ScrapService;
 import com.szs.szsrefund.global.config.common.Response;
 import com.szs.szsrefund.global.config.common.ResponseResult;
 import com.szs.szsrefund.global.config.common.service.ResponseService;
-import com.szs.szsrefund.global.error.StatusCode;
 import com.szs.szsrefund.global.security.jwt.JwtUtils;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

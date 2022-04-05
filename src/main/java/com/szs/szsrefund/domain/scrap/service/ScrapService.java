@@ -7,8 +7,6 @@ import com.szs.szsrefund.domain.scrap.dto.TaxDto;
 import com.szs.szsrefund.domain.scrap.entity.ScrapInfo;
 import com.szs.szsrefund.domain.scrap.entity.ScrapResponse;
 import com.szs.szsrefund.domain.scrap.entity.ScrapUser;
-import com.szs.szsrefund.domain.scrap.exception.NotFoundIncomeException;
-import com.szs.szsrefund.domain.scrap.exception.NotFoundTaxException;
 import com.szs.szsrefund.domain.scrap.exception.ScrapUserDataNullException;
 import com.szs.szsrefund.domain.scrap.repository.*;
 import com.szs.szsrefund.domain.user.entity.User;
@@ -145,10 +143,10 @@ public class ScrapService {
         if (jsonList == null)
             throw new ScrapUserDataNullException();
 
-        IncomeDto incomeDto = findIncomeData(jsonList);
-        TaxDto taxDto = findTaxData(jsonList);
-        ScrapResponse scrapResponse = findResponseData(jsonList);
-        ScrapInfo scrapInfo = findInfoData(response);
+        IncomeDto incomeDto = IncomeDto.findIncomeData(jsonList);
+        TaxDto taxDto = TaxDto.findTaxData(jsonList);
+        ScrapResponse scrapResponse = ScrapResponse.findResponseData(jsonList);
+        ScrapInfo scrapInfo = ScrapInfo.findInfoData(response);
 
         ScrapUser scrapUser = ScrapUser.builder()
                 .name(requestDto.getName())
@@ -166,40 +164,6 @@ public class ScrapService {
         }
 
         scrapRepository.save(scrapUser);
-    }
-
-    private IncomeDto findIncomeData(ScrapJsonListDto jsonList) {
-        return jsonList
-                .getScrap001()
-                .stream()
-                .findFirst()
-                .orElseThrow(NotFoundIncomeException::new);
-    }
-
-    private TaxDto findTaxData(ScrapJsonListDto jsonList) {
-        return jsonList
-                .getScrap002()
-                .stream()
-                .findFirst()
-                .orElseThrow(NotFoundTaxException::new);
-    }
-
-    private ScrapResponse findResponseData(ScrapJsonListDto jsonList) {
-        return ScrapResponse.builder()
-                .errMsg(jsonList.getErrMsg())
-                .company(jsonList.getCompany())
-                .svcCd(jsonList.getSvcCd())
-                .userId(jsonList.getUserId())
-                .build();
-    }
-
-    private ScrapInfo findInfoData(ScrapDto.Response response) {
-        return ScrapInfo.builder()
-                .appVer(response.getAppVer())
-                .hostNm(response.getHostNm())
-                .workerReqDt(response.getWorkerReqDt())
-                .workerResDt(response.getWorkerResDt())
-                .build();
     }
 
 }

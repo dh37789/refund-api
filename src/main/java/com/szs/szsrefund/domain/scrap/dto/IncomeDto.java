@@ -2,6 +2,7 @@ package com.szs.szsrefund.domain.scrap.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.szs.szsrefund.domain.scrap.entity.ScrapIncome;
+import com.szs.szsrefund.domain.scrap.exception.NotFoundIncomeException;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -56,6 +57,14 @@ public class IncomeDto {
         this.workEndDate = workEndDate;
         this.incomeDivision = incomeDivision;
         this.businessNumber = businessNumber;
+    }
+
+    public static IncomeDto findIncomeData(ScrapJsonListDto jsonList) {
+        return jsonList
+                .getScrap001()
+                .stream()
+                .findFirst()
+                .orElseThrow(NotFoundIncomeException::new);
     }
 
     public ScrapIncome toEntity() {

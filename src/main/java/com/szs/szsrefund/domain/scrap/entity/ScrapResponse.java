@@ -1,6 +1,6 @@
 package com.szs.szsrefund.domain.scrap.entity;
 
-import com.szs.szsrefund.global.config.common.BaseTimeEntity;
+import com.szs.szsrefund.domain.scrap.dto.ScrapJsonListDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,4 +39,12 @@ public class ScrapResponse {
         this.userId = userId;
     }
 
+    public static ScrapResponse findResponseData(ScrapJsonListDto jsonList) {
+        return ScrapResponse.builder()
+                .errMsg(jsonList.getErrMsg())
+                .company(jsonList.getCompany())
+                .svcCd(jsonList.getSvcCd())
+                .userId(jsonList.getUserId())
+                .build();
+    }
 }
