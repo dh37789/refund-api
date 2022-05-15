@@ -1,5 +1,6 @@
 package com.szs.szsrefund.global.config.redis;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+@Slf4j
 @Profile("dev")
 @Configuration
 @EnableRedisRepositories
@@ -22,6 +24,8 @@ public class RedisConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
+        log.info("redisHost : " + redisHost);
+        log.info("redisPort : " + redisPort);
         return new LettuceConnectionFactory(redisHost, redisPort);
     }
 

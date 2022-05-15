@@ -42,4 +42,8 @@ public class RedisService {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         return values.get(key);
     }
+
+    public void delValues(String key) {
+        redisTemplate.delete(key);
+    }
 }

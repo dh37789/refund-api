@@ -29,7 +29,8 @@ import reactor.core.publisher.Mono;
 import java.net.http.HttpTimeoutException;
 import java.util.Optional;
 
-import static com.szs.szsrefund.global.config.common.Constants.TOKEN_HEAD_KEY;
+import static com.szs.szsrefund.global.config.common.Constants.*;
+import static com.szs.szsrefund.global.config.common.Constants.REFUND_KEY;
 
 @Slf4j
 @Service
@@ -67,6 +68,8 @@ public class ScrapService {
         /* 단기간내 바로 재조회를 할 수 없도록 60초 제한 */
         redisService.setValues(TOKEN_HEAD_KEY+userId, token, 60);
 
+        delRefundData(userId);
+
         callScrapApi(requestDto)
                 .subscribe(
                         response -> {
@@ -78,6 +81,13 @@ public class ScrapService {
                         }
                 );
         return StatusCode.CALL_API;
+    }
+
+    private void delRefundData(String userId) {
+        redisService.delValues(REFUND_HEAD_KEY+userId+NAME_KEY);
+        redisService.delValues(REFUND_HEAD_KEY+userId+LIMIT_KEY);
+        redisService.delValues(REFUND_HEAD_KEY+userId+DEDUCTION_KEY);
+        redisService.delValues(REFUND_HEAD_KEY+userId+REFUND_KEY);
     }
 
     /**

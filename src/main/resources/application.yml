@@ -30,6 +30,7 @@ spring:
   redis:
     host: localhost
     port: 6390
+    memory: maxmemory 128M
 
 3o3:
   base-url: https://codetest.3o3.co.kr
