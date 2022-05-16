@@ -167,7 +167,7 @@ public class ScrapService {
                 .scrapInfo(scrapInfo)
                 .build();
 
-        Optional<ScrapUser> userResult =  scrapRepository.findByRegNo(scrapUser.getRegNo());
+        Optional<ScrapUser> userResult = scrapRepository.findByRegNo(scrapUser.getRegNo());
 
         if(userResult.isPresent()){
             scrapRepository.delete(userResult.get());

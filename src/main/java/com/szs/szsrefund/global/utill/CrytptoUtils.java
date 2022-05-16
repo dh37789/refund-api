@@ -12,6 +12,8 @@ import java.util.Base64;
 @Component
 public class CrytptoUtils {
 
+    private CrytptoUtils() {}
+
     private static String key;
     private static String chiper;
     private static String iv;

@@ -5,6 +5,8 @@ import java.text.DecimalFormat;
 
 public class StringUtils {
 
+    private StringUtils() {}
+
     /**
      * 주민등록번호 마스킹
      * @param regNo
