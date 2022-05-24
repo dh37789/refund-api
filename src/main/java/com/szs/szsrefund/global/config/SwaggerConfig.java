@@ -59,8 +59,8 @@ public class SwaggerConfig {
 
     private ApiInfo createSwaggerInfo() {
         return new ApiInfoBuilder()
-                .title("삼쩜삼 환급금 조회 APi")
-                .description("자비스앤빌런즈 과제 테스트")
+                .title("연말정산 환급금 조회 APi")
+                .description("환급 조회 api 테스트")
                 .version("1.0")
                 .build();
     }

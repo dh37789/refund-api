@@ -92,7 +92,7 @@ public class ScrapRepositoryTest {
     private ScrapResponse createResponse() {
         return ScrapResponse.builder()
                 .errMsg("")
-                .company("삼쩜삼")
+                .company("회사명")
                 .svcCd("test01")
                 .userId("1")
                 .build();

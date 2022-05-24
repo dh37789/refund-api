@@ -24,8 +24,6 @@ public class RedisConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        log.info("redisHost : " + redisHost);
-        log.info("redisPort : " + redisPort);
         return new LettuceConnectionFactory(redisHost, redisPort);
     }
 
