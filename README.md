@@ -314,11 +314,3 @@ docker exec -it redis_boot redis-cli
 ![스크랩 테스트1](./static/scraptest1.PNG)
 ![스크랩 테스트2](./static/scraptest2.PNG)
 ![레디스 테스트2](./static/redisservicetest1.PNG)
-
----
-
-## 개선 방안
-
-1. 인메모리 저장공간인 Redis를 이용해 줄여 응답성능을 높였습니다.
-2. WebFlux의 non blocking 방식을 통해 사용자의 무분별한 응답 대기현상을 최소화 하였습니다.
-4. 요청온 토큰값을 Redis에 set하고 데이터에 timeout을 걸어 scrap API의 무분별한 중복호출을 방지하여 트래픽을 최소화 하였습니다.
