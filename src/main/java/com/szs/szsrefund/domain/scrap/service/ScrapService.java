@@ -71,6 +71,7 @@ public class ScrapService {
         delRefundData(userId);
 
         callScrapApi(requestDto)
+                .retry(3)
                 .subscribe(
                         response -> {
                             try {
