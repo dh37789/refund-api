@@ -82,7 +82,7 @@ docker exec -it redis_boot redis-cli
 
 ### REQUEST
 
-> POST /szs/signup
+> POST /tax/signup
 
 | 파라미터      |   타입   | 설명               |   필수   |
 |:----------|:------:|:-----------------|:------:|
@@ -132,7 +132,7 @@ docker exec -it redis_boot redis-cli
 
 ### REQUEST
 
-> POST /szs/login
+> POST /tax/login
 
 - BODY
 
@@ -183,7 +183,7 @@ docker exec -it redis_boot redis-cli
 
 ### REQUEST
 
-> GET /szs/me
+> GET /tax/me
 
 - HEADER
 
@@ -232,7 +232,7 @@ docker exec -it redis_boot redis-cli
 
 ### REQUEST
 
-> POST /szs/scrap
+> POST /tax/scrap
 
 - HEADER
 
@@ -266,7 +266,7 @@ docker exec -it redis_boot redis-cli
 
 ### REQUEST
 
-> GET /szs/refund
+> GET /tax/refund
 
 - HEADER
 

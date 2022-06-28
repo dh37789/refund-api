@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class Constants {
     public static final String CONTENT_TYPE = "application/json;charset=UTF-8";
-    public static final String CONTROLLER_PATH = "com.szs.szsrefund.domain";
+    public static final String CONTROLLER_PATH = "com.tax.refund.domain";
 
     public static final String USERINFO_HEAD_KEY = "userInfo:";
     public static final String TOKEN_HEAD_KEY = "token:";

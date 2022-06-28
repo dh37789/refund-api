@@ -1,6 +1,5 @@
 package com.tax.refund.global.error.user;
 
-import com.szs.szsrefund.domain.user.exception.*;
 import com.tax.refund.domain.user.exception.*;
 import com.tax.refund.global.config.common.Response;
 import com.tax.refund.global.config.common.service.ResponseService;

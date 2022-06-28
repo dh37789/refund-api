@@ -8,7 +8,6 @@ import com.tax.refund.domain.scrap.entity.ScrapInfo;
 import com.tax.refund.domain.scrap.entity.ScrapResponse;
 import com.tax.refund.domain.scrap.entity.ScrapUser;
 import com.tax.refund.domain.scrap.exception.ScrapUserDataNullException;
-import com.szs.szsrefund.domain.scrap.repository.*;
 import com.tax.refund.domain.user.entity.User;
 import com.tax.refund.domain.user.exception.NotFoundUserException;
 import com.tax.refund.domain.user.repository.UserRepository;
