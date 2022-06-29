@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableCaching
 @EnableJpaAuditing
 @SpringBootApplication
-public class SzsRefundApplication {
+public class RefundApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SzsRefundApplication.class, args);
+        SpringApplication.run(RefundApplication.class, args);
     }
 
 }
