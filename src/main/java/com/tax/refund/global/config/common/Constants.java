@@ -25,8 +25,8 @@ public class Constants {
             "/v2/api-docs",
             "/favicon.ico",
             "/error",
-            "/szs/signup",
-            "/szs/login"
+            "/tax/signup",
+            "/tax/login"
     };
 
     public static final String AUTHORIZATION_HEADER = "Authorization";

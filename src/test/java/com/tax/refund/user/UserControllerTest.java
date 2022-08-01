@@ -241,20 +241,20 @@ public class UserControllerTest {
     }
 
     private ResultActions requestSignUp(UserSignDto.Request dto) throws Exception {
-        return mockMvc.perform(post("/szs/signup")
+        return mockMvc.perform(post("/tax/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)));
     }
 
     private ResultActions requestLogin(UserLoginDto.Request dto) throws Exception {
-        return mockMvc.perform(post("/szs/login")
+        return mockMvc.perform(post("/tax/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)));
 
     }
 
     private ResultActions requestMe(String token) throws Exception {
-        return mockMvc.perform(get("/szs/me")
+        return mockMvc.perform(get("/tax/me")
                 .header(HttpHeaders.AUTHORIZATION, token));
     }
 

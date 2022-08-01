@@ -105,12 +105,12 @@ public class RefundControllerTest {
     }
 
     private ResultActions requestRefund(String token) throws Exception {
-        return mockMvc.perform(get("/szs/refund")
+        return mockMvc.perform(get("/tax/refund")
                 .header(HttpHeaders.AUTHORIZATION, token));
     }
 
     private ResultActions requestPostRefund(String token) throws Exception {
-        return mockMvc.perform(post("/szs/refund")
+        return mockMvc.perform(post("/tax/refund")
                 .header(HttpHeaders.AUTHORIZATION, token));
     }
 }

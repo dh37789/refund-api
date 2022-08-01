@@ -83,7 +83,7 @@ public class ScrapRepositoryTest {
     private ScrapInfo createScrepInfo() {
         return ScrapInfo.builder()
                 .appVer("2021112501")
-                .hostNm("szs-codetest")
+                .hostNm("tax-codetest")
                 .workerResDt(LocalDateTime.now())
                 .workerReqDt(LocalDateTime.now())
                 .build();

@@ -96,12 +96,12 @@ public class ScrapControllerTest {
     }
 
     private ResultActions requestScrap(String token) throws Exception {
-        return mockMvc.perform(post("/szs/scrap")
+        return mockMvc.perform(post("/tax/scrap")
                 .header(HttpHeaders.AUTHORIZATION, token));
     }
 
     private ResultActions requestGetScrap(String token) throws Exception {
-        return mockMvc.perform(get("/szs/scrap")
+        return mockMvc.perform(get("/tax/scrap")
                 .header(HttpHeaders.AUTHORIZATION, token));
     }
 

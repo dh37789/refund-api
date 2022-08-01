@@ -80,6 +80,4 @@ public class UserSignDto {
             this.name = name;
         }
     }
-
-
 }
