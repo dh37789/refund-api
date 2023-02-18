@@ -221,12 +221,6 @@ docker exec -it redis_boot redis-cli
 - redis를 이용하여 한번 이상 내 정보를 조회한 회원은 redis를 통해 정보를 불러오게 됩니다.
 - redis와 db의 정합성 관련 이슈는 해당 정보들이 쉽게 바뀌지 않고, USER PATCH 요청시 해당 데이터를 맞춰주면 된다고 생각하여서 redis를 통해 응답을 받도록 하였습니다.
 
-### 테스트 결과
-
-![유저 테스트1](./static/usertest2.PNG)
-![유저 테스트2](./static/usertest3.PNG)
-![유저 테스트3](./static/usertest1.PNG)
-
 ---
 ### 스크랩정보 요청
 
@@ -305,12 +299,3 @@ docker exec -it redis_boot redis-cli
 - scrap데이터가 없지만 redis에 token값이 존재할 경우 scrap처리중이라는 안내 응답을 보내도록 예외처리 했습니다.
 - scrap데이터가 존재하여 데이터를 가져왔을 경우 해당 값으로 환급액을 계산하여 반환합니다.
 - 한번 이상 조회 할 경우 redis에 저장 후 일정 시간동안 해당값을 반환하도록 설정하여 재요청에 대한 트래픽을 최소화 하였습니다.
-
-
-### 테스트 결과
-
-![환급 테스트1](./static/refundtest1.PNG)
-![환급 테스트2](./static/refundtest2.PNG)
-![스크랩 테스트1](./static/scraptest1.PNG)
-![스크랩 테스트2](./static/scraptest2.PNG)
-![레디스 테스트2](./static/redisservicetest1.PNG)
