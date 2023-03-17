@@ -54,12 +54,12 @@ public class UserSignDto {
                     .build();
         }
 
-        public void encryptRegNo(String regNo) throws Exception {
-            this.regNo = CrytptoUtils.encrypt(regNo);
+        public void setPassword(String password) {
+            this.password = password;
         }
 
-        public void encodePassword(String password) {
-            this.password = password;
+        public void setRegNo(String regNo) {
+            this.regNo = regNo;
         }
     }
 

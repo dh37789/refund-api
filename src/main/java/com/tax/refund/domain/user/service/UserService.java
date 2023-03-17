@@ -19,9 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.tax.refund.global.config.common.Constants.USERINFO_HEAD_KEY;
-import static com.tax.refund.global.config.common.Constants.NAME_KEY;
-import static com.tax.refund.global.config.common.Constants.REG_NO_KEY;
+import static com.tax.refund.global.config.common.Constants.*;
 
 @Service
 public class UserService {
@@ -46,6 +44,34 @@ public class UserService {
      */
     @Transactional
     public UserSignDto.Response signUp(UserSignDto.Request requestDto) throws Exception {
+        validateUserInfo(requestDto);
+
+        /* AES/CBC/PKCS5Padding 방식으로 암호화 */
+        encryptRegNo(requestDto);
+        /* 비밀번호 bcrypt로 해시 암호화 */
+        encodePassword(requestDto);
+
+        User user = sinUpUser(requestDto);
+
+        return UserSignDto.Response.builder()
+                .userId(user.getUserId())
+                .name(user.getName())
+                .build();
+    }
+
+    private User sinUpUser(UserSignDto.Request requestDto) {
+        return userRepository.save(requestDto.toEntity());
+    }
+
+    public void encodePassword(UserSignDto.Request requestDto) {
+        requestDto.setPassword(passwordEncoder.encode(requestDto.getPassword()));
+    }
+
+    public void encryptRegNo(UserSignDto.Request requestDto) throws Exception {
+        requestDto.setRegNo(CrytptoUtils.encrypt(requestDto.getRegNo()));
+    }
+
+    private void validateUserInfo(UserSignDto.Request requestDto) throws Exception {
         if (isExistsUser(requestDto))
             throw new AlreadyExistsUserException(requestDto.getName());
 
@@ -54,18 +80,6 @@ public class UserService {
 
         if (!User.isMatchedRegNo(Constants.REG_NO_REGEX, requestDto.getRegNo()))
             throw new NotMatchedRegNoException();
-
-        /* AES/CBC/PKCS5Padding 방식으로 암호화 */
-        requestDto.encryptRegNo(requestDto.getRegNo());
-        /* 비밀번호 bcrypt로 해시 암호화 */
-        requestDto.encodePassword(passwordEncoder.encode(requestDto.getPassword()));
-
-        User user = userRepository.save(requestDto.toEntity());
-
-        return UserSignDto.Response.builder()
-                .userId(user.getUserId())
-                .name(user.getName())
-                .build();
     }
 
     /**
@@ -97,18 +111,24 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public UserLoginDto.Response login(UserLoginDto.Request requestDto) {
+        User user = getUserInfo(requestDto);
+
+        return UserLoginDto.Response.builder()
+                .userId(user.getUserId())
+                .token(TokenDto.of(getAccessToken(user)))
+                .build();
+    }
+
+    private String getAccessToken(User user) {
+        return jwtTokenProvider.issueToken(user.getUserId(), user.getName());
+    }
+
+    private User getUserInfo(UserLoginDto.Request requestDto) {
         User user = userRepository.findByUserId(requestDto.getUserId()).orElseThrow(NotFoundUserException::new);
 
         if(!User.isMatchedPassowrd(passwordEncoder, requestDto.getPassword(), user.getPassword()))
             throw new NotMatchedPasswordException();
-
-        /* 로그인정보로 jwt 토큰 발급 */
-        String accessToken = jwtTokenProvider.issueToken(user.getUserId(), user.getName());
-
-        return UserLoginDto.Response.builder()
-                .userId(user.getUserId())
-                .token(TokenDto.of(accessToken))
-                .build();
+        return user;
     }
 
     /**
@@ -119,26 +139,29 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public UserInfoDto.Response me(String userId) throws Exception {
-        /* redis에 데이터가 존재할시 redis에서 조회 */
-        if (isExistsUserFormRedis(userId)) {
-            String name = redisService.getValues("userInfo:"+userId+":id");
-            String regNo = redisService.getValues("userInfo:"+userId+":id");
-            return UserInfoDto.Response.builder()
-                    .userId(userId)
-                    .name(name)
-                    .regNo(StringUtils.maskingRegNo(CrytptoUtils.decrypt(regNo)))
-                    .build();
-        }
+        return isExistsUserFormRedis(userId) ? getUserInfoFromRedis(userId) : getUserInfo(userId);
+    }
 
+    private UserInfoDto.Response getUserInfo(String userId) throws Exception {
         User user = userRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new);
 
-        /* 내정보 redis에 조회 */
+        /* 내정보 redis에 save */
         saveUserToRedis(user);
 
         return UserInfoDto.Response.builder()
                 .userId(user.getUserId())
                 .name(user.getName())
                 .regNo(StringUtils.maskingRegNo(CrytptoUtils.decrypt(user.getRegNo())))
+                .build();
+    }
+
+    private UserInfoDto.Response getUserInfoFromRedis(String userId) throws Exception {
+        String name = redisService.getValues("userInfo:"+ userId +":id");
+        String regNo = redisService.getValues("userInfo:"+ userId +":id");
+        return UserInfoDto.Response.builder()
+                .userId(userId)
+                .name(name)
+                .regNo(StringUtils.maskingRegNo(CrytptoUtils.decrypt(regNo)))
                 .build();
     }
 

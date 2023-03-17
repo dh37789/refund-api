@@ -38,23 +38,17 @@ public class RefundService {
      * @return
      */
     public RefundDto.Response refund(String token) {
-        String userId = JwtUtils.getSubject(token);
+        final String userId = getIdByToken(token);
 
         /* redis에 데이터가 있을경우 get 해서 return */
-        if (isExistRefundFromRedis(userId)){
-            String name = redisService.getValues(REFUND_HEAD_KEY+userId+NAME_KEY);
-            String limit = redisService.getValues(REFUND_HEAD_KEY+userId+LIMIT_KEY);
-            String deduction = redisService.getValues(REFUND_HEAD_KEY+userId+DEDUCTION_KEY);
-            String refund = redisService.getValues(REFUND_HEAD_KEY+userId+REFUND_KEY);
+        return isExistRefundFromRedis(userId) ? getRefundDataFromRedis(userId) : getRefundData(userId);
+    }
 
-            return RefundDto.Response.builder()
-                    .name(name)
-                    .limit(limit)
-                    .deduction(deduction)
-                    .refund(refund)
-                    .build();
-        }
+    private static String getIdByToken(String token) {
+        return JwtUtils.getSubject(token);
+    }
 
+    private RefundDto.Response getRefundData(String userId) {
         User user = userRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new);
         Optional<ScrapUser> scrapUser = scrapRepository.findByRegNo(user.getRegNo());
         String tokenFromRedis = redisService.getValues(TOKEN_HEAD_KEY+user.getUserId());
@@ -68,6 +62,20 @@ public class RefundService {
            }
 
         return calculateRefund(scrapUser.get(), userId);
+    }
+
+    private RefundDto.Response getRefundDataFromRedis(String userId) {
+        String name = redisService.getValues(REFUND_HEAD_KEY+ userId +NAME_KEY);
+        String limit = redisService.getValues(REFUND_HEAD_KEY+ userId +LIMIT_KEY);
+        String deduction = redisService.getValues(REFUND_HEAD_KEY+ userId +DEDUCTION_KEY);
+        String refund = redisService.getValues(REFUND_HEAD_KEY+ userId +REFUND_KEY);
+
+        return RefundDto.Response.builder()
+                .name(name)
+                .limit(limit)
+                .deduction(deduction)
+                .refund(refund)
+                .build();
     }
 
     /**
@@ -88,6 +96,7 @@ public class RefundService {
     private RefundDto.Response calculateRefund(ScrapUser scrapUser, String userId) {
         final BigDecimal TOTAL_PAYMENT = scrapUser.getScrapIncome().getTotalPayment(); /* 총급여액 */
         final BigDecimal TAX = scrapUser.getScrapTax().getTotalUseAmount(); /* 산출세액 */
+
         BigDecimal limitResult = calculateLimit(TOTAL_PAYMENT); /* 한도 */
         BigDecimal deductionResult = calculateDeduction(TAX); /* 공제액 */
         BigDecimal refundResult = limitResult.min(deductionResult); /* 환급액 */
@@ -118,17 +127,23 @@ public class RefundService {
      * @return
      */
     public BigDecimal calculateLimit(BigDecimal TOTAL_PAYMENT) {
-        BigDecimal result;
-        if (TOTAL_PAYMENT.compareTo(Constants.TOTAL_PAYMENT_MIN) < 0) {
-            result = new BigDecimal(740000);
-        } else if (TOTAL_PAYMENT.compareTo(Constants.TOTAL_PAYMENT_MAX) < 0) {
-            result = Constants.LIMIT_MAX.subtract((TOTAL_PAYMENT.subtract(Constants.TOTAL_PAYMENT_MIN)).multiply(Constants.LIMIT_MID_RATE));
-            result =  result.compareTo(Constants.LIMIT_MID) < 0 ? Constants.LIMIT_MID : result;
+        if (isMinimumPayment(TOTAL_PAYMENT)) {
+            return new BigDecimal(740000);
+        } else if (isMaximunPayment(TOTAL_PAYMENT)) {
+            BigDecimal result = Constants.LIMIT_MAX.subtract((TOTAL_PAYMENT.subtract(Constants.TOTAL_PAYMENT_MIN)).multiply(Constants.LIMIT_MID_RATE));
+            return result.compareTo(Constants.LIMIT_MID) < 0 ? Constants.LIMIT_MID : result;
         } else {
-            result = Constants.LIMIT_MID.subtract((TOTAL_PAYMENT.subtract(Constants.TOTAL_PAYMENT_MAX)).multiply(Constants.LIMIT_MAX_RATE));
-            result = result.compareTo(Constants.LIMIT_MIN) < 0 ? Constants.LIMIT_MIN : result;
+            BigDecimal result = Constants.LIMIT_MID.subtract((TOTAL_PAYMENT.subtract(Constants.TOTAL_PAYMENT_MAX)).multiply(Constants.LIMIT_MAX_RATE));
+            return result.compareTo(Constants.LIMIT_MIN) < 0 ? Constants.LIMIT_MIN : result;
         }
-        return result;
+    }
+
+    private static boolean isMinimumPayment(BigDecimal TOTAL_PAYMENT) {
+        return TOTAL_PAYMENT.compareTo(Constants.TOTAL_PAYMENT_MIN) < 0;
+    }
+
+    private static boolean isMaximunPayment(BigDecimal TOTAL_PAYMENT) {
+        return TOTAL_PAYMENT.compareTo(Constants.TOTAL_PAYMENT_MAX) < 0;
     }
 
     /**
@@ -137,13 +152,13 @@ public class RefundService {
      * @return
      */
     public BigDecimal calculateDeduction(BigDecimal TAX) {
-        BigDecimal result;
-        if (TAX.compareTo(Constants.TAX_STANDARD) <= 0) {
-            result = TAX.multiply(Constants.TAX_MIN_LATE);
-        } else {
-            result = Constants.TAX_MAX.add(TAX.subtract(Constants.TAX_STANDARD).multiply(Constants.TAX_MAX_LATE));
-        }
-        return result;
+        return isLowerTaxStandard(TAX) ?
+                TAX.multiply(Constants.TAX_MIN_LATE) :
+                Constants.TAX_MAX.add(TAX.subtract(Constants.TAX_STANDARD).multiply(Constants.TAX_MAX_LATE));
+    }
+
+    private static boolean isLowerTaxStandard(BigDecimal TAX) {
+        return TAX.compareTo(Constants.TAX_STANDARD) <= 0;
     }
 
 }

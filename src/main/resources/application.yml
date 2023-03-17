@@ -32,7 +32,7 @@ spring:
     port: 6390
     memory: maxmemory 128M
 
-3o3:
+api:
   base-url: https://codetest.3o3.co.kr
   uri-path: /scrap/
 

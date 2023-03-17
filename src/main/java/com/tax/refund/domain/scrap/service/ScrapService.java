@@ -17,12 +17,14 @@ import com.tax.refund.global.security.jwt.JwtUtils;
 import com.tax.refund.global.utill.CrytptoUtils;
 import com.tax.refund.domain.scrap.repository.ScrapRepository;
 import io.netty.handler.timeout.ReadTimeoutException;
+import io.netty.util.internal.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -36,7 +38,7 @@ import static com.tax.refund.global.config.common.Constants.REFUND_KEY;
 @Service
 public class ScrapService {
 
-    @Value("${3o3.uri-path}")
+    @Value("${api.uri-path}")
     private String scrapUri;
 
     private final WebClient webClient;
@@ -59,8 +61,9 @@ public class ScrapService {
      */
     public StatusCode saveScrap(String token) throws Exception {
         final ScrapDto.Request requestDto = findUserId(token);
-        String userId = JwtUtils.getSubject(token);
+        final String userId = getIdByToken(token);
 
+        // TODO Redission으로 변경
         /* 60초 이내 재요청 할 시 요청중이라는 상태값 return */
         if(isExistTokenFromRedis(userId, token))
             return StatusCode.API_LODING;
@@ -70,6 +73,12 @@ public class ScrapService {
 
         delRefundData(userId);
 
+        scrapCallback(requestDto);
+
+        return StatusCode.CALL_API;
+    }
+
+    private void scrapCallback(ScrapDto.Request requestDto) {
         callScrapApi(requestDto)
                 .retry(3)
                 .subscribe(
@@ -81,9 +90,9 @@ public class ScrapService {
                             }
                         }
                 );
-        return StatusCode.CALL_API;
     }
 
+    // TODO redis DB설정 추가
     private void delRefundData(String userId) {
         redisService.delValues(REFUND_HEAD_KEY+userId+NAME_KEY);
         redisService.delValues(REFUND_HEAD_KEY+userId+LIMIT_KEY);
@@ -110,14 +119,16 @@ public class ScrapService {
      */
     @Transactional(readOnly = true)
     public ScrapDto.Request findUserId(String token) throws Exception {
-        String userId = JwtUtils.getSubject(token);
-
-        User user = userRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new);
+        User user = userRepository.findByUserId(getIdByToken(token)).orElseThrow(NotFoundUserException::new);
 
         return ScrapDto.Request.builder()
                 .name(user.getName())
                 .regNo(CrytptoUtils.decrypt(user.getRegNo()))
                 .build();
+    }
+
+    private static String getIdByToken(String token) {
+        return JwtUtils.getSubject(token);
     }
 
     /**
@@ -149,11 +160,25 @@ public class ScrapService {
      */
     @Transactional
     public void setResponseData(ScrapDto.Response response, ScrapDto.Request requestDto) throws Exception {
-        ScrapJsonListDto jsonList = response.getScrapJsonList();
+        final ScrapJsonListDto jsonList = response.getScrapJsonList();
 
-        if (jsonList == null)
+        if (isNotExsitScrapInfo(jsonList))
             throw new ScrapUserDataNullException();
 
+        ScrapUser scrapUser = getScrapUser(response, requestDto, jsonList);
+
+        Optional<ScrapUser> userResult = scrapRepository.findByRegNo(scrapUser.getRegNo());
+
+        userResult.ifPresent(scrapRepository::delete);
+
+        scrapRepository.save(scrapUser);
+    }
+
+    private static boolean isNotExsitScrapInfo(ScrapJsonListDto jsonList) {
+        return ObjectUtils.isEmpty(jsonList);
+    }
+
+    private static ScrapUser getScrapUser(ScrapDto.Response response, ScrapDto.Request requestDto, ScrapJsonListDto jsonList) throws Exception {
         IncomeDto incomeDto = IncomeDto.findIncomeData(jsonList);
         TaxDto taxDto = TaxDto.findTaxData(jsonList);
         ScrapResponse scrapResponse = ScrapResponse.findResponseData(jsonList);
@@ -167,14 +192,7 @@ public class ScrapService {
                 .scrapResponse(scrapResponse)
                 .scrapInfo(scrapInfo)
                 .build();
-
-        Optional<ScrapUser> userResult = scrapRepository.findByRegNo(scrapUser.getRegNo());
-
-        if(userResult.isPresent()){
-            scrapRepository.delete(userResult.get());
-        }
-
-        scrapRepository.save(scrapUser);
+        return scrapUser;
     }
 
 }
