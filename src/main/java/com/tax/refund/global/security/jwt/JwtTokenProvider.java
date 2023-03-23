@@ -85,16 +85,19 @@ public class JwtTokenProvider implements InitializingBean {
     private static Map<String, Object> createClaim(String userId, String name) {
         Date now = new Date();
 
-        Claims claims = Jwts.claims()
-                .setSubject(userId)
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + accessTokenValidityInMilliseconds));
+        Claims claims = getClaims(userId, now);
 
         claims.put(Constants.NAME_KEY, name);
 
         return claims;
     }
 
+    private static Claims getClaims(String userId, Date now) {
+        return Jwts.claims()
+                .setSubject(userId)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + accessTokenValidityInMilliseconds));
+    }
 
 
 }

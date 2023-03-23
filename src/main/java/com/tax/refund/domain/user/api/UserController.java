@@ -20,25 +20,22 @@ import javax.validation.Valid;
 public class UserController {
 
     private final UserService userService;
-    private final ResponseService responseService;
-
-    public UserController(UserService userService, ResponseService responseService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.responseService = responseService;
     }
 
     @ApiOperation(value="사용자 회원가입", notes="환급정보를 조회 하기 위해 회원가입 합니다.")
     @PostMapping("/signup")
     @ResponseStatus(value = HttpStatus.CREATED)
     public ResponseResult<UserSignDto.Response> signUp(@RequestBody @Valid @ApiParam(value = "사용자 회원가입 request") UserSignDto.Request requestDto) throws Exception {
-        return responseService.getResponseResult(userService.signUp(requestDto));
+        return ResponseService.getResponseResult(userService.signUp(requestDto));
     }
 
     @ApiOperation(value="사용자 로그인", notes="로그인하고 JWT 토큰을 반환합니다.")
     @PostMapping("/login")
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseResult<UserLoginDto.Response> login(@RequestBody @Valid @ApiParam(value = "사용자 로그인 request") UserLoginDto.Request requestDto) {
-        return responseService.getResponseResult(userService.login(requestDto));
+        return ResponseService.getResponseResult(userService.login(requestDto));
     }
 
     @ApiOperation(value="사용자 정보보기", notes="header의 토큰정보를 읽어 내정보를 반환합니다.")
@@ -46,6 +43,6 @@ public class UserController {
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseResult<UserInfoDto.Response> me(HttpServletRequest request) throws Exception  {
         String token = JwtUtils.resolveToken(request);
-        return responseService.getResponseResult(userService.me(JwtUtils.getSubject(token)));
+        return ResponseService.getResponseResult(userService.me(JwtUtils.getSubject(token)));
     }
 }

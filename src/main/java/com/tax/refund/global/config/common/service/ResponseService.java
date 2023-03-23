@@ -3,12 +3,10 @@ package com.tax.refund.global.config.common.service;
 import com.tax.refund.global.config.common.Response;
 import com.tax.refund.global.config.common.ResponseResult;
 import com.tax.refund.global.error.StatusCode;
-import org.springframework.stereotype.Service;
 
-@Service
 public class ResponseService {
 
-    public <T> ResponseResult<T> getResponseResult(T data){
+    public static <T> ResponseResult<T> getResponseResult(T data){
         ResponseResult<T> response = new ResponseResult<>();
         setSuccessResponse(response);
         response.setData(data);
@@ -16,28 +14,14 @@ public class ResponseService {
         return response;
     }
 
-    public ResponseResult getResponseResult(){
-        ResponseResult response = new ResponseResult();
-        setSuccessResponse(response);
-
-        return response;
-    }
-
-    public ResponseResult getResponseResult(StatusCode statusCode){
+    public static ResponseResult getResponseResult(StatusCode statusCode){
         ResponseResult response = new ResponseResult();
         setSuccessResponse(response, statusCode);
 
         return response;
     }
 
-    private Response setSuccessResponse() {
-        Response result = new Response();
-        setSuccessResponse(result);
-
-        return result;
-    }
-
-    private Response setSuccessResponse(Response response) {
+    private static Response setSuccessResponse(Response response) {
         response.setSuccess(true);
         response.setCode(StatusCode.SUCCESS.getCode());
         response.setMsg(StatusCode.SUCCESS.getMessage());
@@ -46,7 +30,7 @@ public class ResponseService {
         return response;
     }
 
-    private Response setSuccessResponse(Response response, StatusCode statusCode) {
+    private static Response setSuccessResponse(Response response, StatusCode statusCode) {
         response.setSuccess(true);
         response.setCode(statusCode.getCode());
         response.setMsg(statusCode.getMessage());
@@ -55,7 +39,7 @@ public class ResponseService {
         return response;
     }
 
-    public Response getFailureResult(StatusCode errorCode) {
+    public static Response getFailureResult(StatusCode errorCode) {
         Response result = new Response();
         result.setSuccess(false);
         result.setCode(errorCode.getCode());
@@ -66,7 +50,7 @@ public class ResponseService {
     }
 
 
-    public Response getFailureResult(Response result) {
+    public static Response getFailureResult(Response result) {
         return  result;
     }
 }

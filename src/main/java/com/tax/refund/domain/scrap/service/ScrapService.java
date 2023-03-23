@@ -8,6 +8,7 @@ import com.tax.refund.domain.scrap.entity.ScrapInfo;
 import com.tax.refund.domain.scrap.entity.ScrapResponse;
 import com.tax.refund.domain.scrap.entity.ScrapUser;
 import com.tax.refund.domain.scrap.exception.ScrapUserDataNullException;
+import com.tax.refund.domain.scrap.repository.ScrapRepository;
 import com.tax.refund.domain.user.entity.User;
 import com.tax.refund.domain.user.exception.NotFoundUserException;
 import com.tax.refund.domain.user.repository.UserRepository;
@@ -15,9 +16,7 @@ import com.tax.refund.global.config.redis.RedisService;
 import com.tax.refund.global.error.StatusCode;
 import com.tax.refund.global.security.jwt.JwtUtils;
 import com.tax.refund.global.utill.CrytptoUtils;
-import com.tax.refund.domain.scrap.repository.ScrapRepository;
 import io.netty.handler.timeout.ReadTimeoutException;
-import io.netty.util.internal.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -32,7 +31,6 @@ import java.net.http.HttpTimeoutException;
 import java.util.Optional;
 
 import static com.tax.refund.global.config.common.Constants.*;
-import static com.tax.refund.global.config.common.Constants.REFUND_KEY;
 
 @Slf4j
 @Service
